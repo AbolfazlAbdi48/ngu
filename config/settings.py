@@ -170,4 +170,12 @@ PWA_APP_ICONS_APPLE = [
         "sizes": "512x512"
     }
 ]
+PWA_APP_SCREENSHOTS = [
+    {
+        'src': '/static/site/icons/512x512.png',
+        'sizes': '1080x1920',
+        'type': 'image/png',
+        'form_factor': 'wide'
+    }
+]
 PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/site/js', 'serviceworker.js')

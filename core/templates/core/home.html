@@ -1,8 +1,11 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en" dir="rtl">
+{% load pwa %}
 
 <head>
+    {% progressive_web_app_meta %}
     <meta charset="utf-8">
     <title>تاک - پویش تقویت تاب آوری کسب و کار های ایران</title>
 
@@ -278,26 +281,26 @@
                     </div>
                     <a class="btn btn-primary py-3 px-5 mt-2" href="#form">درخواست مشاوره</a>
                 </div>
-{#                <div class="col-lg-6">#}
-{#                    <div class="row g-3">#}
-{#                        <div class="col-6 text-start">#}
-{#                            <img class="img-fluid rounded w-75 wow zoomIn" data-wow-delay="0.1s"#}
-{#                                 src="{% static 'site/img/about-1.jpg' %}" style="margin-top: 25%;">#}
-{#                        </div>#}
-{#                        <div class="col-6 text-end">#}
-{#                            <img class="img-fluid rounded w-100 wow zoomIn" data-wow-delay="0.3s"#}
-{#                                 src="{% static 'site/img/about-2.jpg' %}">#}
-{#                        </div>#}
-{#                        <div class="col-6 text-start">#}
-{#                            <img class="img-fluid rounded w-50 wow zoomIn" data-wow-delay="0.5s"#}
-{#                                 src="{% static 'site/img/about-3.jpg' %}">#}
-{#                        </div>#}
-{#                        <div class="col-6 text-end">#}
-{#                            <img class="img-fluid rounded w-75 wow zoomIn" data-wow-delay="0.7s"#}
-{#                                 src="{% static 'site/img/about-4.jpg' %}">#}
-{#                        </div>#}
-{#                    </div>#}
-{#                </div>#}
+                {#                <div class="col-lg-6">#}
+                {#                    <div class="row g-3">#}
+                {#                        <div class="col-6 text-start">#}
+                {#                            <img class="img-fluid rounded w-75 wow zoomIn" data-wow-delay="0.1s"#}
+                {#                                 src="{% static 'site/img/about-1.jpg' %}" style="margin-top: 25%;">#}
+                {#                        </div>#}
+                {#                        <div class="col-6 text-end">#}
+                {#                            <img class="img-fluid rounded w-100 wow zoomIn" data-wow-delay="0.3s"#}
+                {#                                 src="{% static 'site/img/about-2.jpg' %}">#}
+                {#                        </div>#}
+                {#                        <div class="col-6 text-start">#}
+                {#                            <img class="img-fluid rounded w-50 wow zoomIn" data-wow-delay="0.5s"#}
+                {#                                 src="{% static 'site/img/about-3.jpg' %}">#}
+                {#                        </div>#}
+                {#                        <div class="col-6 text-end">#}
+                {#                            <img class="img-fluid rounded w-75 wow zoomIn" data-wow-delay="0.7s"#}
+                {#                                 src="{% static 'site/img/about-4.jpg' %}">#}
+                {#                        </div>#}
+                {#                    </div>#}
+                {#                </div>#}
             </div>
         </div>
     </div>

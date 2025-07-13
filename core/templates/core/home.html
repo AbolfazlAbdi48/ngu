@@ -349,9 +349,9 @@
     window.addEventListener('load', function () {
       navigator.serviceWorker.register("{% static 'site/js/serviceworker.js' %}")
         .then(function (registration) {
-          alert('ServiceWorker registration successful with scope:');
+          console.log('ServiceWorker registration successful with scope:');
         }, function (err) {
-          alert('ServiceWorker registration failed:');
+          console.log('ServiceWorker registration failed:');
         });
     });
   }

@@ -280,7 +280,8 @@
                         </div>
                     </div>
                     <a class="btn btn-primary py-3 px-5 mt-2" href="#form">درخواست مشاوره</a>
-                    <button class="btn btn-primary py-3 px-5 mt-2" id="installBtn" style="display: none;">نصب اپلیکیشن</button>
+                    <button id="installBtn" class="btn btn-primary py-3 px-5 mt-2">📲 نصب اپلیکیشن</button>
+
                 </div>
                 {#                <div class="col-lg-6">#}
                 {#                    <div class="row g-3">#}
@@ -345,16 +346,44 @@
 
 <!-- JavaScript Libraries -->
 <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function () {
-      navigator.serviceWorker.register("{% static 'site/js/serviceworker.js' %}")
-        .then(function (registration) {
-          console.log('ServiceWorker registration successful with scope:');
-        }, function (err) {
-          console.log('ServiceWorker registration failed:');
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register("{% static 'site/js/serviceworker.js' %}")
+                .then(function (registration) {
+                    console.log('ServiceWorker registration successful with scope:');
+                }, function (err) {
+                    console.log('ServiceWorker registration failed:');
+                });
         });
+    }
+</script>
+
+<script>
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('[PWA] beforeinstallprompt fired');
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.style.display = 'inline-block';
     });
-  }
+
+    installBtn.addEventListener('click', () => {
+        console.log('[PWA] Install button clicked');
+        if (deferredPrompt) {
+            console.log('[PWA] Prompting install...');
+            deferredPrompt.prompt();
+
+            deferredPrompt.userChoice.then((choiceResult) => {
+                console.log('[PWA] User choice:', choiceResult.outcome);
+                deferredPrompt = null;
+                installBtn.style.display = 'none';
+            });
+        } else {
+            console.warn('[PWA] No deferredPrompt available');
+        }
+    });
 </script>
 
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

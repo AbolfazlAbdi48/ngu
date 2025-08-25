@@ -22,7 +22,7 @@ def home_view(request):
             send_mail(
                 subject='درخواست جدید مشاوره',
                 message=f'نام: {name}\nشماره تماس: {phone_number}\nصنعت: {industry}',
-                from_email='rad.sharifi85@gmail.com',
+                from_email=config('EMAIL_HOST_USER'),
                 recipient_list=config('AAA').split(','),
                 fail_silently=False,
             )

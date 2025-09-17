@@ -1,0 +1,394 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load test_tags%}
+{% block content %}
+<style>
+ .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+  }
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .error {
+    color: red;
+  }
+  .form-container {
+    padding-bottom: 120px;
+    max-width: 1000px;
+    margin: 120px auto;
+  }
+  .form-container h1 {
+    text-align: center;
+    color: #333;
+  }
+  .form-container p {
+    text-align: center;
+    color: #555;
+  }
+  .form-container form {
+    background: #ffffffff;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  .form-container div {
+    margin-bottom: 15px;
+  }
+  .form-container strong {
+    display: block;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  .phone-input {
+    width: 200px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .rating-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: 10px 0;
+  }
+  .rating-label {
+    font-size: 16px;
+    color: #333;
+    min-width: 80px;
+  }
+  .rating-label.left {
+    text-align: left;
+  }
+  .rating-label.right {
+    text-align: right;
+  }
+  .rating-options {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    justify-content: space-around;
+  }
+  .rating-option {
+    position: relative;
+    cursor: pointer;
+  }
+  .rating-option input[type="radio"] {
+    display: none;
+  }
+  .rating-circle {
+    display: block;
+    width: 40px;
+    height: 40px;
+    border: 3px solid;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    position: relative;
+    background: transparent;
+  }
+  .rating-option:nth-child(2) .rating-circle {
+    border-color: #8B0000;
+    width: 60px;
+    height: 60px;
+  }
+  .rating-option:nth-child(3) .rating-circle {
+    border-color: #8B0000;
+    width: 50px;
+    height: 50px;
+  }
+  .rating-option:nth-child(4) .rating-circle {
+    border-color: #808080;
+    width: 40px;
+    height: 40px;
+  }
+  .rating-option:nth-child(5) .rating-circle {
+    border-color: #006400;
+    width: 50px;
+    height: 50px;
+  }
+  .rating-option:nth-child(6) .rating-circle {
+    border-color: #006400;
+    width: 60px;
+    height: 60px;
+  }
+  .rating-option input[type="radio"]:checked + .rating-circle {
+    background-color: inherit; /* Fallback to inherit */
+  }
+  .rating-option:nth-child(2) input[type="radio"]:checked + .rating-circle { background-color: #8B0000; } /* Dark green */
+  .rating-option:nth-child(3) input[type="radio"]:checked + .rating-circle { background-color: #8B0000; } /* Bright green */
+  .rating-option:nth-child(4) input[type="radio"]:checked + .rating-circle { background-color: #808080; } /* Grey */
+  .rating-option:nth-child(5) input[type="radio"]:checked + .rating-circle { background-color: #006400; } /* Bright red */
+  .rating-option:nth-child(6) input[type="radio"]:checked + .rating-circle { background-color: #006400; } /* Dark red */
+  .rating-option:hover .rating-circle {
+    transform: scale(1.1);
+  }
+  .form-container button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background: #FEA116;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .form-container button:hover {
+    background: #ff9900ff;
+  }
+  .form-container div {
+  margin-bottom: 18px; /* Increased from 15px to 25px for more space between questions */
+  padding: 10px; /* Added internal padding for each question div */
+  }
+  .form-container h5 {
+  margin-bottom: 50px; /* Increased from 10px to 15px for more space below question text */
+  }
+  .rating-label {
+  min-width: 110px; /* Increased from 80px to 100px for wider label areas */
+  margin-up: 100px;
+  }
+  .rating-options {
+  gap: 5px; /* Increased from 10px to 20px for more space between radio options */
+  }
+  /* Your existing CSS remains unchanged unless noted below */
+
+  .rating-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: 10px 0;
+  }
+  .rating-options {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    justify-content: space-around;
+  }
+  .rating-option {
+    position: relative;
+    cursor: pointer;
+  }
+  .rating-option input[type="radio"] {
+    display: none;
+  }
+  .rating-circle {
+    display: block;
+    width: 40px;
+    height: 40px;
+    border: 3px solid;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    position: relative;
+    background: transparent;
+  }
+  .rating-option:nth-child(2) .rating-circle {
+    border-color: #8B0000;
+    width: 60px;
+    height: 60px;
+  }
+  .rating-option:nth-child(3) .rating-circle {
+    border-color: #8B0000;
+    width: 50px;
+    height: 50px;
+  }
+  .rating-option:nth-child(4) .rating-circle {
+    border-color: #808080;
+    width: 40px;
+    height: 40px;
+  }
+  .rating-option:nth-child(5) .rating-circle {
+    border-color: #006400;
+    width: 50px;
+    height: 50px;
+  }
+  .rating-option:nth-child(6) .rating-circle {
+    border-color: #006400;
+    width: 60px;
+    height: 60px;
+  }
+  .rating-option input[type="radio"]:checked + .rating-circle {
+    background-color: inherit;
+  }
+  .rating-option:nth-child(2) input[type="radio"]:checked + .rating-circle { background-color: #8B0000; }
+  .rating-option:nth-child(3) input[type="radio"]:checked + .rating-circle { background-color: #8B0000; }
+  .rating-option:nth-child(4) input[type="radio"]:checked + .rating-circle { background-color: #808080; }
+  .rating-option:nth-child(5) input[type="radio"]:checked + .rating-circle { background-color: #006400; }
+  .rating-option:nth-child(6) input[type="radio"]:checked + .rating-circle { background-color: #006400; }
+  .rating-option:hover .rating-circle {
+    transform: scale(1.1);
+  }
+
+  /* Responsive adjustments for mobile (screens under 768px) */
+  @media (max-width: 768px) {
+    .rating-options {
+      gap: 20px; /* Increased gap for more space */
+      width: 90%; /* Wider area within the container */
+      margin: 0 auto; /* Center the wider area */
+    }
+    .rating-circle {
+      width: 25px; /* Smaller base size */
+      height: 25px;
+    }
+    .rating-option:nth-child(2) .rating-circle {
+      width: 40px; /* Proportional reduction */
+      height: 40px;
+    }
+    .rating-option:nth-child(3) .rating-circle {
+      width: 30px; /* Proportional reduction */
+      height: 30px;
+    }
+    .rating-option:nth-child(4) .rating-circle {
+      width: 25px; /* Proportional reduction */
+      height: 25px;
+    }
+    .rating-option:nth-child(5) .rating-circle {
+      width: 30px; /* Proportional reduction */
+      height: 30px;
+    }
+    .rating-option:nth-child(6) .rating-circle {
+      width: 40px; /* Proportional reduction */
+      height: 40px;
+    }
+    .rating-label {
+      font-size: 14px; /* Reduced text size for more space */
+      min-width: 80px;
+    }
+    .form-container {
+      padding-bottom: 80px;
+      margin: 20px auto;
+    }
+    .form-container form {
+      padding: 15px;
+    }
+    .phone-input {
+      width: 150px;
+      padding: 10px;
+    }
+    .form-container button {
+      padding: 8px 15px;
+    }
+  }
+  /* Rest of your CSS (e.g., .form-container, .modal, inputs) remains unchanged */
+</style>
+
+<div class="form-container">
+  <h1>پرسشنامه سنجش تاب‌آوری کسب‌وکار</h1>
+  <p>مقیاس: از "خیلی مخالفم" تا "خیلی موافقم" با ۵ گزینه</p>
+  <form id="testForm" method="POST">
+    {% csrf_token %}
+    <div>
+      <input type="text" name="user_name" class="phone-input" dir="rtl" placeholder="نام و نام خانوادگی" required>
+      <input type="tel" name="user_phone" class="phone-input" dir="rtl" placeholder="شماره تماس" required pattern="[0-9]{11,15}">
+      <input type="text" name="user_industry" class="phone-input" dir="rtl" placeholder="حوزه فعالیت" required>
+    </div>
+    <br>
+    {% for question in question_fields %}
+    <div>
+      <h5>{{ question.emoji }} {{ question.id }}. {{ question.text }}</h5>
+      <div class="rating-group">
+        <h5 class="rating-label left">خیلی مخالفم</h5>
+        {% for value in "12345" %}
+          <label class="rating-option">
+            <input type="radio" name="{{ question.field_name }}" value="{{ value }}" required>
+            <span class="rating-circle"></span>
+          </label>
+        {% endfor %}
+        <h6 class="rating-label right">خیلی موافقم</h6>
+      </div>
+    </div><br>
+    {% endfor %}
+    <button type="submit">ارسال</button>
+  </form>
+  <!-- Modal Structure -->
+  <div id="resultModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>نتایج پرسشنامه</h2>
+      <div id="modalResult"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Get modal and related elements
+  const modal = document.getElementById('resultModal');
+  const modalResult = document.getElementById('modalResult');
+  const closeBtn = document.getElementsByClassName('close')[0];
+
+  // Close modal when clicking the close button or outside
+  closeBtn.onclick = function() {
+    modal.style.display = 'none';
+  }
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = 'none';
+    }
+  }
+
+  document.getElementById('testForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    console.log('Form Data:', Object.fromEntries(formData));
+    try {
+      const res = await fetch('/test/', {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value }
+      });
+      const json = await res.json();
+      if (json.success) {
+        modalResult.innerHTML = `
+          <p>امتیاز کلی: ${json.percentile}% (${json.status})</p>
+          <p style="color: green;"> ${json.message}</p>
+          <h3>درصد و وضعیت هر چالش:</h3>
+          <p>۱. چالش قطعی برق: ${json.percentile_electricity_challenge}% (${json.status_electricity_challenge})</p>
+          <p>۲. چالش منابع انسانی کار یدی: ${json.percentile_manual_labor_challenge}% (${json.status_manual_labor_challenge})</p>
+          <p>۳. چالش به هم ریختن زنجیره تامین: ${json.percentile_supply_chain_challenge}% (${json.status_supply_chain_challenge})</p>
+          <p>۴. چالش به هم ریختن زنجیره ی توزیع: ${json.percentile_distribution_challenge}% (${json.status_distribution_challenge})</p>
+          <p>۵. چالش تغییر ناگهانی در سبد خرید دولت و خانوار: ${json.percentile_customer_demand_challenge}% (${json.status_customer_demand_challenge})</p>
+          <p>۶. چالش تامین نقدینگی و سرمایه در گردش: ${json.percentile_liquidity_challenge}% (${json.status_liquidity_challenge})</p>
+          <p>۷. چالش قطعی اینترنت: ${json.percentile_internet_challenge}% (${json.status_internet_challenge})</p>
+        `;
+        modal.style.display = 'block';
+      } else {
+        modalResult.innerHTML = `
+          <p class="error"><strong>خطا:</strong> ${json.message}</p>
+          <p class="error"><strong>جزئیات خطا:</strong> ${json.errors}</p>
+        `;
+        modal.style.display = 'block';
+      }
+    } catch (error) {
+      modalResult.innerHTML = `
+        <p class="error"><strong>خطا در ارسال فرم:</strong> ${error.message}</p>
+      `;
+      modal.style.display = 'block';
+    }
+  };
+</script>
+{% endblock %}

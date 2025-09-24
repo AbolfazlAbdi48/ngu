@@ -1,48 +1,23 @@
 from django.db import models
 
-
-# Create your models here.
-class ContactUs(models.Model):
-    TYPE_CHOICES = (
-        ('counseling', 'مشاوره'),
-        ('message', 'ارتباط با ما')
-    )
-
-    name = models.CharField(max_length=255, verbose_name='نام')
-    type = models.CharField(max_length=255, choices=TYPE_CHOICES, verbose_name='نوع پیام')
-    phone_number = models.CharField(max_length=255, verbose_name='شماره تماس')
-    industry = models.CharField(max_length=255, verbose_name='زمینه فعالیت')
-    message = models.CharField(max_length=255, null=True, blank=True, verbose_name='متن پیام')
-    seen = models.BooleanField(default=False, verbose_name='خوانده شده')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
-
-    class Meta:
-        verbose_name = 'تماس'
-        verbose_name_plural = '1. تماس ها'
-
-    def __str__(self):
-        return f"{self.name} - {self.phone_number}"
-
-from django.db import models
-
 class DurabilityTest(models.Model):
     user_name = models.CharField(max_length=50)
-    user_phone = models.IntegerField(max_length=15)
+    user_phone = models.CharField(max_length=15)
     user_industry = models.CharField(max_length=50)
-    q1 = models.IntegerField(choices=[(i, str(i)) for i in range(1,6)])
-    q2 = models.IntegerField(choices=[(i, str(i)) for i in range(1,6)])
-    q3 = models.IntegerField(choices=[(i, str(i)) for i in range(1,6)])
-    q4 = models.IntegerField(choices=[(i, str(i)) for i in range(1,6)])
-    q5 = models.IntegerField(choices=[(i, str(i)) for i in range(1,6)])
-    q6 = models.IntegerField(choices=[(i, str(i)) for i in range(1,6)])
-    q7 = models.IntegerField(choices=[(i, str(i)) for i in range(1,6)])
-    q8 = models.IntegerField(choices=[(i, str(i)) for i in range(1,6)])
-    q9 = models.IntegerField(choices=[(i, str(i)) for i in range(1,6)])
-    q10 = models.IntegerField(choices=[(i, str(i)) for i in range(1,6)])
-    q11 = models.IntegerField(choices=[(i, str(i)) for i in range(1,6)])
-    q12 = models.IntegerField(choices=[(i, str(i)) for i in range(1,6)])
-    q13 = models.IntegerField(choices=[(i, str(i)) for i in range(1,6)])
-    q14 = models.IntegerField(choices=[(i, str(i)) for i in range(1,6)])
+    q1 = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True)
+    q2 = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True)
+    q3 = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True)
+    q4 = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True)
+    q5 = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True)
+    q6 = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True)
+    q7 = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True)
+    q8 = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True)
+    q9 = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True)
+    q10 = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True)
+    q11 = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True)
+    q12 = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True)
+    q13 = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True)
+    q14 = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)], null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def raw_score(self):

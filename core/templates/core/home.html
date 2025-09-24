@@ -9,33 +9,24 @@
                     <img class="w-100" src="{% static 'site/img/logo.jpg' %}" alt="Image" style="height: 100vh;">
                     <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                         <div class="p-3" style="max-width: 700px;">
-                            {% if messages %}
-                                {% for message in messages %}
-                                    <div class="alert alert-{{ message.tags }}" dir="rtl">
-                                        {{ message }}
-                                    </div>
-                                {% endfor %}
-                            {% else %}
-                                <h1 class="section-title text-white text-uppercase mb-3 animated slideInDown" style="font-size:
-1.5rem">
-                                    تاک
-                                </h1>
-                                <h2 class="section-desc text-white mb-4 animated slideInDown"
-                                    style="font-size: 1.5rem">پویش تقویت
-                                    تاب
-                                    آوری
-                                    کسب و کار های ایران</h2>
-                                <p class="section-txt">
+                            <h1 class="section-title text-white text-uppercase mb-3 animated slideInDown" style="font-size:1.5rem">
+                                تاک
+                            </h1>
+                            <h2 class="section-desc text-white mb-4 animated slideInDown"
+                                style="font-size: 1.5rem">پویش تقویت
+                                تاب
+                                آوری
+                                کسب و کار های ایران</h2>
+                            <p class="section-txt">
 
-                                    هموطن کارآفرین، برای دریافت خدمات رایگان جهت تقویت تاب آوری کسب و کار خود در شرایط
-                                    جنگی، کافیست فرم زیر را پر نمایید.
-                                </p>
-                                {#                                <a href="" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Our#}
-                                {#                                    Rooms</a>#}
-                                {#                                <a href="#form" class="btn btn-light py-md-3 px-md-5 animated slideInRight">#}
-                                {#                                    درخواست مشاوره رایگان#}
-                                {#                                </a>#}
-                            {% endif %}
+                                هموطن کارآفرین، برای دریافت خدمات رایگان جهت تقویت تاب آوری کسب و کار خود در شرایط
+                                جنگی، کافیست فرم زیر را پر نمایید.
+                            </p>
+                            {#                                <a href="" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Our#}
+                            {#                                    Rooms</a>#}
+                            {#                                <a href="#form" class="btn btn-light py-md-3 px-md-5 animated slideInRight">#}
+                            {#                                    درخواست مشاوره رایگان#}
+                            {#                                </a>#}
                         </div>
                     </div>
                 </div>
@@ -70,42 +61,38 @@
 
 
     <!-- Booking Start -->
-    {% if not messages %}
-        <div class="container-fluid booking pb-5 wow fadeIn" data-wow-delay="0.1s" id="form">
-            <div class="container">
-                <div class="bg-white shadow" style="padding: 35px;">
-                    <div class="row g-2">
-                        <div class="col-md-12">
-                            <form method="post" dir="rtl">
-                                {% csrf_token %}
-                                <div class="row g-2">
-                                    <div class="col-12">
-                                        <h4 class="text-center">مشاوره رایگان دریافت کنید</h4>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="text" name="name" class="form-control" placeholder="نام" required>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="text" name="phone_number" class="form-control"
-                                               placeholder="شماره تماس"
-                                               required>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="text" name="industry" class="form-control"
-                                               placeholder="زمینه فعالیت"
-                                               required>
-                                    </div>
-                                    <div class="col-md-3 mt-2">
-                                        <button class="btn btn-primary w-100">ارسال</button>
-                                    </div>
-                                </div>
-                            </form>
+
+<div class="container-fluid booking pb-5 wow fadeIn" data-wow-delay="0.1s" id="form">
+    <div class="container">
+        <div class="bg-white shadow" style="padding: 35px;">
+            <div class="row g-2">
+                <div class="col-md-12">
+                    <form method="post" dir="rtl">
+                        {% csrf_token %}
+                        <div class="row g-2">
+                            <div class="col-12">
+                                <h4 class="text-center">مشاوره رایگان دریافت کنید</h4>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" name="user_name" class="form-control" placeholder="نام" required>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" name="user_phone" class="form-control" placeholder="شماره تماس" required>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" name="user_industry" class="form-control" placeholder="زمینه فعالیت" required>
+                            </div>
+                            <div class="col-md-3 mt-2">
+                                <button class="btn btn-primary w-100">ارسال</button>
+                            </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
-    {% endif %}
+     </div>
+    </div>
+  
     <!-- Booking End -->
 
 

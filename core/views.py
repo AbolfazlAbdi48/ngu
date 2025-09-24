@@ -1,50 +1,12 @@
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
-from django.contrib import messages
-from .models import ContactUs
 from.forms import DurabilityTestForm
+from.models import DurabilityTest
 from django.http import JsonResponse
 from decouple import config
 import logging
 
 logger = logging.getLogger(__name__)
-
-
-def home_view(request):
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        phone_number = request.POST.get('phone_number')
-        industry = request.POST.get('industry')
-
-        try:
-            ContactUs.objects.create(
-                name=name,
-                phone_number=phone_number,
-                industry=industry,
-                type='counseling'
-            )
-                                                                         
-            send_mail(
-                subject='درخواست جدید مشاوره',
-                message=f'نام: {name}\nشماره تماس: {phone_number}\nصنعت: {industry}',
-                from_email=config('EMAIL_HOST_USER'),
-                recipient_list=config('AAA').split(','),
-                fail_silently=False,
-            )
-
-            messages.success(
-                request,
-                'درخواست شما با موفقیت ثبت و ایمیل شد. کارشناسان تاک به زودی با شما تماس میگیرند.'
-                '\nبه امید ایرانی آباد، مقتدر و شاد...'
-            )
-            return redirect('core:home')
-
-        except Exception as e:
-            messages.error(request, f'خطا در ثبت پیام یا ارسال ایمیل: {str(e)}')
-            return redirect('core:home')
-
-    return render(request, 'core/home.html')
-
 
 QUESTIONS = [
     {"id":1, "text":"اگر برق قطع شود، ما سریعاً راه‌حل جایگزین (مثل ژنراتور یا UPS) داریم. قطعی برق نمی‌تواند کسب‌وکار ما را فلج کند.", "emoji":"🔌", "field_name":"q1"},
@@ -63,9 +25,44 @@ QUESTIONS = [
     {"id":14, "text":"بازخورد مشتریان به ما کمک می‌کند تا تاب‌آوری خود را بهبود دهیم.", "emoji":"📝", "field_name":"q14"}
 ]
 
-def test_form(request):
+def home_view(request):
     if request.method == 'POST':
-        form = DurabilityTestForm(request.POST)
+        name = request.POST.get('user_name')
+        phone_number = request.POST.get('user_phone')
+        industry = request.POST.get('user_industry')
+        try:
+            test = DurabilityTest.objects.create(
+                user_name=name,
+                user_phone=phone_number,
+                user_industry=industry
+            )
+            request.session['test_id'] = test.id
+            request.session['success_message'] = ' درخواست شما با موفقیت ثبت شد. کارشناسان تاک به زودی با شما تماس می‌گیرند، برایه سنجش تاب آوری کسب و کار خود فرم زیر را پر کنید.'
+            print(f"Session after save: {request.session}")
+            send_mail(
+                subject='درخواست جدید مشاوره',
+                message=f'نام: {name}\nشماره تماس: {phone_number}\nحوزه فعالیت: {industry}',
+                from_email=config('EMAIL_HOST_USER'),
+                recipient_list=config('AAA').split(','),
+                fail_silently=False,
+            )
+            return redirect('test/')
+        except Exception as e:
+            print(f"Error in home_view: {e}")
+            return render(request, 'core/home.html')
+    return render(request, 'core/home.html')
+
+def test_view(request):
+    if request.method == 'POST':
+        test_id = request.session.pop('test_id', None)
+        if test_id:
+            try:
+                test = DurabilityTest.objects.get(id=test_id)
+                form = DurabilityTestForm(request.POST, instance=test)
+            except DurabilityTest.DoesNotExist:
+                form = DurabilityTestForm(request.POST)
+        else:
+            form = DurabilityTestForm(request.POST)
         logger.info(f"Received POST data: {request.POST}")
         if form.is_valid():
             test = form.save()
@@ -73,9 +70,9 @@ def test_form(request):
             return JsonResponse({
                 'success': True,
                 'message': 'فرم با موفقیت ثبت شد!',
-                'percentile': test.percentile(),
-                'status': test.status(),
-                'raw': test.raw_score(),
+                'percentile': test.percentile() if all(getattr(test, f'q{i}', None) for i in range(1, 15)) else 0,
+                'status': test.status() if all(getattr(test, f'q{i}', None) for i in range(1, 15)) else 'ثبت اولیه',
+                'raw': test.raw_score() if all(getattr(test, f'q{i}', None) for i in range(1, 15)) else 0,
                 'percentile_electricity_challenge': test.percentile_electricity_challenge,
                 'status_electricity_challenge': test.status_electricity_challenge,
                 'percentile_manual_labor_challenge': test.percentile_manual_labor_challenge,
@@ -89,15 +86,32 @@ def test_form(request):
                 'percentile_liquidity_challenge': test.percentile_liquidity_challenge,
                 'status_liquidity_challenge': test.status_liquidity_challenge,
                 'percentile_internet_challenge': test.percentile_internet_challenge,
-                'status_internet_challenge': test.status_internet_challenge
+                'status_internet_challenge': test.status_internet_challenge,
             })
         else:
             logger.error(f"Form validation failed: {form.errors}")
             return JsonResponse({
                 'success': False,
-                'message': 'خطا در فرم. لطفاً تمام فیلدها را بررسی کنید.',
+                'message': form.errors.get('__all__', ['خطا در فرم. لطفاً تمام فیلدها را بررسی کنید.']),
                 'errors': form.errors.as_json()
             }, status=400)
     else:
-        form = DurabilityTestForm()
-    return render(request, 'core/test.html', {'form': form, 'question_fields': QUESTIONS})
+        test_id = request.session.get('test_id')
+        if test_id:
+            try:
+                test = DurabilityTest.objects.get(id=test_id)
+                form = DurabilityTestForm(instance=test)
+                success_message = request.session.get('success_message')
+                if 'success_message' in request.session:
+                    del request.session['success_message']
+            except DurabilityTest.DoesNotExist:
+                form = DurabilityTestForm()
+                if 'test_id' in request.session:
+                    del request.session['test_id']
+                success_message = None
+        else:
+            form = DurabilityTestForm()
+            success_message = None
+        context = {'form': form, 'question_fields': QUESTIONS, 'test_id': test_id, 'success_message': success_message}
+        print(f"Test view context: test_id={test_id}, success_message={success_message}")
+        return render(request, 'core/test.html', context)

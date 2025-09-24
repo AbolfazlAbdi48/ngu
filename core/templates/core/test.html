@@ -297,35 +297,67 @@
   /* Rest of your CSS (e.g., .form-container, .modal, inputs) remains unchanged */
 </style>
 
-<div class="form-container">
-  <h1>پرسشنامه سنجش تاب‌آوری کسب‌وکار</h1>
-  <p>مقیاس: از "خیلی مخالفم" تا "خیلی موافقم" با ۵ گزینه</p>
-  <form id="testForm" method="POST">
+<div class='form-container'>
+{% if test_id and success_message %}
+<div class="container-fluid booking pb-5 wow fadeIn" data-wow-delay="0.1s" id="form">
+    <div class="container">
+        <div class="bg-white shadow" style="padding: 35px;">
+            <div class="row g-2">
+                <div class="col-md-12">
+                    <div class="alert alert-success">{{ success_message }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<h1 class="text-center">پرسشنامه سنجش تاب‌آوری کسب‌وکار</h1>
+<p class="text-center">مقیاس: از "خیلی مخالفم" تا "خیلی موافقم" با ۵ گزینه</p>
+<form id="testForm" method="POST" class="container">
     {% csrf_token %}
-    <div>
-      <input type="text" name="user_name" class="phone-input" dir="rtl" placeholder="نام و نام خانوادگی" required>
-      <input type="tel" name="user_phone" class="phone-input" dir="rtl" placeholder="شماره تماس" required pattern="[0-9]{11,15}">
-      <input type="text" name="user_industry" class="phone-input" dir="rtl" placeholder="حوزه فعالیت" required>
+    <div class="row g-2">
+        <div class="col-12">
+            <h4 class="text-center">اطلاعات اولیه</h4>
+        </div>
+        <div class="col-md-3">
+            {{ form.user_name|add_class:"form-control" }}
+        </div>
+        <div class="col-md-3">
+            {{ form.user_phone|add_class:"form-control" }}
+        </div>
+        <div class="col-md-3">
+            {{ form.user_industry|add_class:"form-control" }}
+        </div>
     </div>
     <br>
+
     {% for question in question_fields %}
-    <div>
-      <h5>{{ question.emoji }} {{ question.id }}. {{ question.text }}</h5>
-      <div class="rating-group">
-        <h5 class="rating-label left">خیلی مخالفم</h5>
-        {% for value in "12345" %}
-          <label class="rating-option">
-            <input type="radio" name="{{ question.field_name }}" value="{{ value }}" required>
-            <span class="rating-circle"></span>
-          </label>
-        {% endfor %}
-        <h6 class="rating-label right">خیلی موافقم</h6>
-      </div>
+    <div class="row g-2">
+        <div class="col-12">
+            <h5>{{ question.emoji }} {{ question.id }}. {{ question.text }}</h5>
+        </div>
+        <div class="col-12">
+            <div class="rating-group">
+                <h6 class="rating-label left">مخالفم</h6>
+                {% for value in "12345" %}
+                    <label class="rating-option">
+                        <input type="radio" name="{{ question.field_name }}" value="{{ value }}" required>
+                        <span class="rating-circle"></span>
+                    </label>
+                {% endfor %}
+                <h6 class="rating-label right">موافقم</h6>
+            </div>
+        </div>
     </div><br>
     {% endfor %}
-    <button type="submit">ارسال</button>
-  </form>
-  <!-- Modal Structure -->
+    <div class="row g-2">
+        <div class="col-md-3 mt-2">
+            <button class="btn btn-primary w-100">ارسال</button>
+        </div>
+    </div>
+</form>
+
   <div id="resultModal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
@@ -334,14 +366,13 @@
     </div>
   </div>
 </div>
+</div>
 
 <script>
-  // Get modal and related elements
-  const modal = document.getElementById('resultModal');
+const modal = document.getElementById('resultModal');
   const modalResult = document.getElementById('modalResult');
   const closeBtn = document.getElementsByClassName('close')[0];
 
-  // Close modal when clicking the close button or outside
   closeBtn.onclick = function() {
     modal.style.display = 'none';
   }
@@ -354,7 +385,6 @@
   document.getElementById('testForm').onsubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    console.log('Form Data:', Object.fromEntries(formData));
     try {
       const res = await fetch('/test/', {
         method: 'POST',
@@ -364,8 +394,7 @@
       const json = await res.json();
       if (json.success) {
         modalResult.innerHTML = `
-          <p>امتیاز کلی: ${json.percentile}% (${json.status})</p>
-          <p style="color: green;"> ${json.message}</p>
+          <p style="color: green;"><strong>پیام:</strong> ${json.message}</p>
           <h3>درصد و وضعیت هر چالش:</h3>
           <p>۱. چالش قطعی برق: ${json.percentile_electricity_challenge}% (${json.status_electricity_challenge})</p>
           <p>۲. چالش منابع انسانی کار یدی: ${json.percentile_manual_labor_challenge}% (${json.status_manual_labor_challenge})</p>
@@ -388,6 +417,26 @@
         <p class="error"><strong>خطا در ارسال فرم:</strong> ${error.message}</p>
       `;
       modal.style.display = 'block';
+    }
+  };
+
+  document.getElementById('initialForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    try {
+      const res = await fetch('/', {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value }
+      });
+      const json = await res.json();
+      if (json && json.success) {
+        window.location.href = '/test/'; // Redirect to durability test page
+      } else {
+        alert(json.message || 'خطا در ارسال فرم.');
+      }
+    } catch (error) {
+      alert('خطا در ارسال فرم: ' + error.message);
     }
   };
 </script>
